@@ -2,14 +2,7 @@
 
 import React from 'react';
 import { useFormik } from 'formik';
-import {
-  Box,
-  Paper,
-  TextField,
-  Button,
-  Typography,
-  Stack,
-} from '@mui/material';
+import { Box, Paper, TextField, Button, Typography, Stack } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { state, storeDispatch } from '../_redux/store';
@@ -21,38 +14,39 @@ export default function Login() {
   const dispatch = useDispatch<storeDispatch>();
   const router = useRouter();
 
-  async function login(values: { email: string; password: string }) { 
-    dispatch(setloading())
-    const response = await fetch('https://linked-posts.routemisr.com/users/signin', {
-      method: 'POST',
-      body: JSON.stringify(values),
-      headers: { 'Content-Type': 'application/json' },
-    });
+  async function login(values: { email: string; password: string }) {
+    try {
+      dispatch(setloading());
 
-    const data = await response.json();
+      // ✅ URL داخل backticks ```
+      const response = await fetch(`https://linked-posts.routemisr.com/users/signin`, {
+        method: 'POST',
+        body: JSON.stringify(values),
+        headers: { 'Content-Type': 'application/json' },
+      });
 
-    if (response.ok) {
-      dispatch(setToken(data.token));
-      router.push('/');
-    } else {
-      dispatch(setErroe(data.message || data.error || 'Login failed'));
+      const data = await response.json();
+      console.log('LOGIN status:', response.status, 'data:', data);
+
+      if (response.ok && data?.token) {
+        dispatch(setToken(data.token));     // يحفظ token في localStorage('token')
+        router.replace('/');                // بدّل push لو حابب
+      } else {
+        dispatch(setErroe(data?.message || data?.error || 'Login failed'));
+      }
+    } catch (err: any) {
+      dispatch(setErroe(err?.message || 'Network error'));
     }
   }
 
   const { handleSubmit, handleChange, values } = useFormik({
-    initialValues: {
-      email: '',
-      password: '',
-    },
+    initialValues: { email: '', password: '' },
     onSubmit: login,
   });
 
   return (
     <Box sx={{ px: 2, py: 4 }}>
-      <Paper
-        elevation={4}
-        sx={{ p: 3, maxWidth: 500, mx: 'auto', mt: 6, borderRadius: 2 }}
-      >
+      <Paper elevation={4} sx={{ p: 3, maxWidth: 500, mx: 'auto', mt: 6, borderRadius: 2 }}>
         <Typography variant="h5" sx={{ mb: 3, fontWeight: 700 }}>
           login
         </Typography>
@@ -68,6 +62,8 @@ export default function Login() {
               value={values.email}
               onChange={handleChange}
               fullWidth
+              required
+              autoComplete="email"
             />
 
             <TextField
@@ -79,6 +75,8 @@ export default function Login() {
               value={values.password}
               onChange={handleChange}
               fullWidth
+              required
+              autoComplete="current-password"
             />
 
             {isLoading ? (

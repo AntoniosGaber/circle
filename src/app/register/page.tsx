@@ -26,51 +26,49 @@ export default function Register() {
     rePassword: '',
     phone: '',
     dateOfBirth: '',
-    gender: 'male',
+    gender: 'male', // default like your old UI
   });
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  }
 
   async function handleRegister(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setLoading(true);
 
-    const htmlForm = e.currentTarget as HTMLFormElement;
-
+    // نرسل القيم كما هي بدون أي تحقق
     const userData = {
-      name: (htmlForm.elements.namedItem('name') as HTMLInputElement).value,
-      email: (htmlForm.elements.namedItem('email') as HTMLInputElement).value,
-      password: (htmlForm.elements.namedItem('password') as HTMLInputElement).value,
-      rePassword: (htmlForm.elements.namedItem('rePassword') as HTMLInputElement).value,
-      dateOfBirth: (htmlForm.elements.namedItem('dateOfBirth') as HTMLInputElement).value, // d-m-yyyy
-      gender: (htmlForm.elements.namedItem('gender') as HTMLInputElement).value.toLowerCase(),
+      name: form.name,
+      email: form.email,
+      password: form.password,
+      rePassword: form.rePassword,
+      dateOfBirth: form.dateOfBirth, // أي صيغة تكتبها هتتبعت كما هي
+      gender: form.gender,
+      // phone غير مطلوب للـ API — نتركه خارج البودي
     };
 
     try {
       const response = await fetch('https://linked-posts.routemisr.com/users/signup', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }, // ✅ بدون token
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(userData),
       });
 
       const data = await response.json();
-      console.log(data)
+      console.log('SIGNUP:', response.status, data);
+
       if (!response.ok) {
-        // السيرفر بيرجع message عند الخطأ غالبًا
-        throw new Error(data?.message || 'Signup failed');
+        throw new Error(data?.message || data?.error || 'Signup failed');
       }
 
-      // نجاح
-      alert('Signup success ✅');
       router.push('/login');
     } catch (err: any) {
-      setError(err.message || 'Signup failed');
+      setError(err?.message || 'Signup failed');
     } finally {
       setLoading(false);
     }
-  }
-
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setForm({ ...form, [e.target.name]: e.target.value });
   }
 
   return (
@@ -90,6 +88,8 @@ export default function Register() {
               variant="standard"
               value={form.name}
               onChange={handleChange}
+              required
+              autoComplete="name"
             />
 
             <TextField
@@ -99,6 +99,8 @@ export default function Register() {
               variant="standard"
               value={form.email}
               onChange={handleChange}
+              required
+              autoComplete="email"
             />
 
             <TextField
@@ -108,6 +110,8 @@ export default function Register() {
               variant="standard"
               value={form.password}
               onChange={handleChange}
+              required
+              autoComplete="new-password"
             />
 
             <TextField
@@ -117,11 +121,12 @@ export default function Register() {
               variant="standard"
               value={form.rePassword}
               onChange={handleChange}
+              required
+              autoComplete="new-password"
             />
 
-            {/* الهاتف غير مطلوب للـ API لكن خليه في الواجهة لو حابب */}
             <TextField
-              label="Phone"
+              label="Phone (optional)"
               name="phone"
               type="tel"
               variant="standard"
@@ -130,12 +135,13 @@ export default function Register() {
             />
 
             <TextField
-              label="Date of Birth (d-m-yyyy)"
+              label="Date of Birth"
               name="dateOfBirth"
               placeholder="07-10-1990"
               variant="standard"
               value={form.dateOfBirth}
               onChange={handleChange}
+              required
             />
 
             <TextField

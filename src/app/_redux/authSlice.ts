@@ -1,39 +1,47 @@
 
-"use client"
-import { createSlice } from "@reduxjs/toolkit";
+'use client';
 
-let initialState = {
-   
-   token: (typeof window !== 'undefined' ? localStorage.getItem('token') : null) as string | null,
+import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-
-  isLoading: false as boolean,
-  error: null as null | string,
+type AuthState = {
+  token: string | null;
+  isLoading: boolean;
+  error: string | null;
 };
 
-export let autheSlice = createSlice({
+const initialState: AuthState = {
+  token: typeof window !== 'undefined' ? localStorage.getItem('token') : null,
+  isLoading: false,
+  error: null,
+};
+
+export const autheSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
+  
     setloading: (state) => {
       state.isLoading = true;
+      state.error = null;
     },
-    setToken: (state, action) => {
+    setToken: (state, action: PayloadAction<string>) => {
       state.isLoading = false;
       localStorage.setItem('token', action.payload);
       state.token = action.payload;
+      state.error = null;
     },
     removeToken: (state) => {
       state.isLoading = false;
       localStorage.removeItem('token');
       state.token = null;
     },
-    setErroe: (state, action) => {
+    
+    setErroe: (state, action: PayloadAction<string>) => {
       state.isLoading = false;
       state.error = action.payload;
     },
   },
 });
 
-export let authReducer = autheSlice.reducer;
-export let { setErroe, setToken, removeToken, setloading } = autheSlice.actions;
+export const authReducer = autheSlice.reducer;
+export const { setErroe, setToken, removeToken, setloading } = autheSlice.actions;
