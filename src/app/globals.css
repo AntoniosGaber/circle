@@ -40,3 +40,47 @@ a {
     color-scheme: dark;
   }
 }
+
+img {
+  height: auto !important;
+  max-width: 100%;
+  display: block;
+}
+
+
+img[decoding="async"] {
+  height: auto !important;
+}
+
+
+.MuiAvatar-root img {
+  width: 100% !important;
+  height: auto !important;
+  object-fit: cover;
+}
+
+@media (max-width: 600px) {
+  
+  .MuiCard-root {
+    max-width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding: 16px !important; 
+  }
+
+  
+  .MuiCardActions-root {
+    width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    justify-content: space-between;
+  }
+
+  
+  .MuiCard-root img {
+    width: 100% !important;
+    height: auto !important;
+    object-fit: cover;
+    border-radius: 8px; 
+  }
+}
