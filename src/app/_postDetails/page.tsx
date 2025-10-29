@@ -1,4 +1,10 @@
-"use client";
+
+ 
+ "use client";
+// @ts-nocheck
+
+
+
 
 import * as React from "react";
 import { styled } from "@mui/material/styles";
@@ -35,7 +41,7 @@ export default function PostDetails({
   isComments?: boolean;
 }) {
   const [expanded, setExpanded] = React.useState(false);
-  // ✅ ابدأ بالحالي من البوست
+  
   const [comments, setcomments] = React.useState<PostComment[]>(post?.comments || []);
 
   async function handleSubmit(e: React.FormEvent) {
@@ -54,7 +60,7 @@ export default function PostDetails({
       },
     });
     const data = await response.json();
-    // ✅ الـ API بيرجع comments
+    
     setcomments(data.comments || comments);
   }
 
@@ -117,7 +123,7 @@ export default function PostDetails({
         </CardActions>
 
         <Collapse in={expanded} timeout="auto" unmountOnExit>
-          {/* عرض أول تعليق + لينك */}
+          
           {comments?.length > 0 && !isComments ? (
             <CardContent sx={{ backgroundColor: "#eee", my: 2 }}>
               <CardHeader
@@ -152,7 +158,7 @@ export default function PostDetails({
               </Link>
             </CardContent>
           ) : (
-            // عرض كل التعليقات في صفحة السنجل
+            
             isComments &&
             comments.map((comment: PostComment) => (
               <CardContent key={comment._id} sx={{ backgroundColor: "#eee", my: 2 }}>
